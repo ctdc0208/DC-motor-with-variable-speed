@@ -1,27 +1,23 @@
+#define CS_THRESHOLD 15   // Definition of safety current
+// Define values for:
 #define BRAKE 0
-#define CW    1
-#define CCW   2
-#define CS_THRESHOLD 15   // Definition of safety current (Check: "1.3 Monster Shield Example").
-
-//MOTOR 1
-#define MOTOR_A1_PIN 7
-#define MOTOR_B1_PIN 8
-
-#define PWM_MOTOR_1 5
-
-#define CURRENT_SEN_1 A2
-
-#define EN_PIN_1 A0
-
+#define CW 1 // clockwise
 #define MOTOR_1 0
 
-short usSpeed = 36;  //default motor speed 36rpm
-// not sure if 36 = 36 rpm
+//Assign Pins
+#define EN_PIN_1 A0
+#define CURRENT_SEN_1 A2 // CS > A2
+#define MOTOR_B1_PIN 8 // INB > D8
+#define MOTOR_A1_PIN 7 // INA > D7
+#define PWM_MOTOR_1 5 // PWM > D5
+
+// default RPM
+short usSpeed = 36;
 unsigned short usMotor_Status = BRAKE;
- 
-void setup()                         
+
+void setup ()
 {
-  pinMode(MOTOR_A1_PIN, OUTPUT);
+	pinMode(MOTOR_A1_PIN, OUTPUT);
   pinMode(MOTOR_B1_PIN, OUTPUT);
 
   pinMode(PWM_MOTOR_1, OUTPUT);
@@ -30,28 +26,20 @@ void setup()
  
   pinMode(EN_PIN_1, OUTPUT);
 
-  Serial.begin(9600);              // Initiates the serial to do the monitoring 
+	Serial.begin(9600);              // Initiates the serial to do the monitoring 
   Serial.println("Begin motor control");
   Serial.println(); //Print function list for user selection
   Serial.println("Enter number for control option:");
   Serial.println("1. STOP");
-  Serial.println("2. FORWARD");
-  Serial.println("3. REVERSE");
-  Serial.println("+. INCREASE SPEED");
-  Serial.println("-. DECREASE SPEED");
+  Serial.println("2. 36 RPM");
+  Serial.println("3. 42 RPM");
+	Serial.println("4. 46 RPM");
   Serial.println();
-
 }
 
-void loop() 
+void loop()
 {
-  char user_input;   
-
-  
-  
-  while(Serial.available())
-  {
-    user_input = Serial.read(); //Read user input and trigger appropriate function
+	user_input = Serial.read(); //Read user input and trigger appropriate function
     digitalWrite(EN_PIN_1, HIGH);
 
      
@@ -61,99 +49,53 @@ void loop()
     }
     else if(user_input =='2')
     {
-      Forward();
+      FirstRPM();
     }
     else if(user_input =='3')
     {
-      Reverse();
+      SecondRPM() () ;
     }
-    else if(user_input =='+')
+    else if(user_input =='4')
     {
-      IncreaseSpeed();
-    }
-    else if(user_input =='-')
-    {
-      DecreaseSpeed();
+      ThirdRPM();
     }
     else
     {
       Serial.println("Invalid option entered.");
-    }
-      
+    }   
   }
 }
 
 void Stop()
 {
-  Serial.println("Stop");
+	Serial.println("Stop");
   usMotor_Status = BRAKE;
   motorGo(MOTOR_1, usMotor_Status, 0);
 }
 
-void Forward()
+void FirstRPM() 
 {
-  Serial.println("Forward");
-  usMotor_Status = CW;
-  motorGo(MOTOR_1, usMotor_Status, usSpeed);
-}
-
-void Reverse()
-{
-  Serial.println("Reverse");
-  usMotor_Status = CCW;
-  motorGo(MOTOR_1, usMotor_Status, usSpeed);
-}
-
-void IncreaseSpeed()
-{
-  usSpeed = usSpeed + 10;
-  if(usSpeed > 255)
-  {
-    usSpeed = 255;  
-  }
-  
-  Serial.print("Speed +: ");
+	usSpeed = usSpeed;
+	Serial.print("Speed = 36 rpm");
   Serial.println(usSpeed);
 
   motorGo(MOTOR_1, usMotor_Status, usSpeed);
 }
 
-void DecreaseSpeed()
+void SecondRPM() 
 {
-  usSpeed = usSpeed - 10;
-  if(usSpeed < 0)
-  {
-    usSpeed = 0;  
-  }
-  
-  Serial.print("Speed -: ");
+	usSpeed = 42;
+	Serial.print("Speed = 36 rpm");
   Serial.println(usSpeed);
 
   motorGo(MOTOR_1, usMotor_Status, usSpeed);
 }
 
-void motorGo(uint8_t motor, uint8_t direct, uint8_t pwm)         //Function that controls the variables: motor(0 ou 1), direction (cw ou ccw) e pwm (entra 0 e 255);
+void ThirdRPM() 
 {
-  if(motor == MOTOR_1)
-  {
-    if(direct == CW)
-    {
-      digitalWrite(MOTOR_A1_PIN, LOW); 
-      digitalWrite(MOTOR_B1_PIN, HIGH);
-    }
-    else if(direct == CCW)
-    {
-      digitalWrite(MOTOR_A1_PIN, HIGH);
-      digitalWrite(MOTOR_B1_PIN, LOW);      
-    }
-    else
-    {
-      digitalWrite(MOTOR_A1_PIN, LOW);
-      digitalWrite(MOTOR_B1_PIN, LOW);            
-    }
-    
-    analogWrite(PWM_MOTOR_1, pwm); 
-  }
+	usSpeed = 46;
+	Serial.print("Speed = 36 rpm");
+  Serial.println(usSpeed);
+
+  motorGo(MOTOR_1, usMotor_Status, usSpeed);
 }
-
-
